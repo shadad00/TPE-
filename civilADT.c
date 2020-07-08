@@ -8,6 +8,7 @@ typedef struct node{
   char * barrio;
   size_t habitantes;
   size_t arboles;
+  //struct node * next; 
 }Tnode;
 
 typedef struct elem{ //lista ordenada por cociente entre arboles y habitantes
@@ -64,7 +65,8 @@ static struct list * addRec(struct list * lista, char * nombre, int habitantes )
     disponible= malloc(sizeof(struct list ));
     checkMem(disponible);
     aux=disponible;
-    aux->nodo.barrio=nombre;
+    aux->nodo.barrio=malloc((strlen(nombre)+1)*sizeof(char));
+    strcpy(aux->nodo.barrio,nombre);
     aux->nodo.habitantes=habitantes;
     aux->nodo.arboles=0;
     aux->tail=lista;
@@ -92,7 +94,7 @@ static void FindNeighRec(struct list * lista, char * nombre){
   if(lista==NULL)
     return;
 
-  int c=strcmp(lista->nodo.barrio,nombre) ;
+  int c=strcmp(lista->nodo.barrio,nombre);
   if( c == 0 ){
     lista->nodo.arboles++;
     return ;     
@@ -122,7 +124,8 @@ static struct elem * AddCocienteRec(struct elem * lista, double cociente, char *
     checkMem(disponible);
     aux=disponible;
     aux->cociente=cociente;
-    aux->nombre=nombre;
+    aux->nombre=malloc((strlen(nombre)+1)*sizeof(char));
+    strcpy(aux->nombre,nombre);
     aux->tail=lista;
     return aux;
   }
@@ -145,7 +148,8 @@ struct orden * AddNodosRec(struct orden * lista, int arboles,char * nombre){
       disponible=malloc(sizeof(struct orden));
       checkMem(disponible);
       aux=disponible;
-      aux->nombre=nombre;
+      aux->nombre=malloc((strlen(nombre)+1)*sizeof(char));
+      strcpy(aux->nombre,nombre);
       aux->arboles=arboles;
       aux->tail=lista;
       return aux;
@@ -169,6 +173,7 @@ void TreePerHab(civilADT civil){
     civil->cociente=AddCocienteRec(civil->cociente, aux->nodo.arboles/(float)aux->nodo.habitantes, aux->nodo.barrio);
     civil->arbolesxBarrio=AddNodosRec(civil->arbolesxBarrio,aux->nodo.arboles, aux->nodo.barrio);
     aux2=aux->tail; // guardo la posicion del siguiente elemento 
+    free(aux->nodo.barrio);
     free(aux);
     aux=aux2;
   }
@@ -189,11 +194,13 @@ while(civil->arbolesxBarrio!=NULL || civil->cociente!=NULL){
   struct elem * aux2;
   if(civil->arbolesxBarrio!=NULL){
     aux1 = civil->arbolesxBarrio->tail;
+    free(civil->arbolesxBarrio->nombre);
     free(civil->arbolesxBarrio);
     civil->arbolesxBarrio=aux1;
   }
   if(civil->cociente!=NULL){
     aux2=civil->cociente->tail;
+    free(civil->cociente->nombre);
     free(civil->cociente);
     civil->cociente=aux2;
   }
@@ -204,4 +211,54 @@ free(civil);
 };
 
 
+/*
+Funcion de prueba que imprime una lista en la salida estandar
+*/
+void ImprimirLista(struct elem * lista,FILE * archivo){
+struct elem * aux;
+aux=lista;
+while(aux!=NULL){
+  fprintf(archivo,"\n%s;%.2f",aux->nombre, aux->cociente);
+  aux=aux->tail;
+}
 
+}
+
+void Imprimir(civilADT civil,FILE * archivo){
+  ImprimirLista(civil->cociente,archivo);
+}
+
+
+
+void ImprimirPrimer(struct list * lista,FILE * archivo){
+struct list * aux;
+aux=lista;
+while(aux!=NULL){
+  fprintf(archivo,"\n%s-%zu-%zu",aux->nodo.barrio, aux->nodo.habitantes,aux->nodo.arboles);
+  aux=aux->tail;
+}
+
+}
+
+void ImpPrimera(civilADT civil,FILE * archivo){
+  ImprimirPrimer(civil->lista,archivo);
+
+}
+
+
+static void imprisegun(struct orden * lista,FILE * archivo){
+  struct orden * aux;
+  aux=lista;//query 1 
+
+  while(aux!=NULL){
+    fprintf(archivo,"\n%s;%zu",aux->nombre, aux->arboles);
+    aux=aux->tail;
+  }
+
+}
+
+
+void ImpSegunda(civilADT civil,FILE * archivo){
+  imprisegun(civil->arbolesxBarrio,archivo);
+
+}

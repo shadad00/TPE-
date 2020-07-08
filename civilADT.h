@@ -35,6 +35,9 @@ En ambos casos en caso de empate define el orden ASCII
 void TreePerHab(civilADT civil);
 
 
+/*para probarlo*/
+void Imprimir(civilADT civil,FILE * archivo);
+void ImpPrimera(civilADT civil, FILE * archivo);
+void ImpSegunda(civilADT civil,FILE * archivo);
 
 #endif
-
