@@ -1,7 +1,7 @@
 #include "manageCSV.h"
+#include <stdbool.h>
 
-
-
+/* Devuelve un puntero a filename. Aborta en caso de error */
 FILE * loadFile (char * filename) {
 
   FILE * pFile = fopen(filename, "r");
@@ -10,19 +10,11 @@ FILE * loadFile (char * filename) {
     fprintf(stderr, "No se pudo abrir el archivo %s\n", filename) ; 
     exit(2);
    }
-
   return pFile; 
 }
 
-// int checkMem (void * pointer) {
-//   if (pointer == NULL) {
-//     fprintf(stderr, "Fallo en la asignación de memoria\n") ; 
-//   }
-//   return 1;
-// }
-
-
-void getRegCIV(char * line, char * neigh, size_t neighCol, long * pop, size_t popCol){
+/* Retorna en parametros de salida los datos a cargar en el civilADT leidos de una linea*/
+static void getRegCIV(char * line, char * neigh, size_t neighCol, long * pop, size_t popCol){
   short stored = 0;
 	char * tok = strtok(line, DEL);
 	size_t iter = 1;
@@ -41,7 +33,8 @@ void getRegCIV(char * line, char * neigh, size_t neighCol, long * pop, size_t po
     return;
 }
 
-void getRegBOT(char * line, char * neigh, size_t neighCol, char *scName, size_t scNameCol, double * diam, size_t diamCol) {
+/* Retorna en parametros de salida los datos a cargar en el botanicalADT leidos de una linea */
+static void getRegBOT(char * line, char * neigh, size_t neighCol, char *scName, size_t scNameCol, double * diam, size_t diamCol) {
   short stored = 0;
     char * tok = strtok(line, DEL);
     size_t iter = 1;
@@ -64,8 +57,9 @@ void getRegBOT(char * line, char * neigh, size_t neighCol, char *scName, size_t 
     return;
 }
 
-void readPlants(botanicalADT botanical, civilADT civil, FILE * fPlants) {
-
+/* Carga iterativamente la informacion de todo el archivo en el botanicTAD */
+bool readPlants(botanicalADT botanical, civilADT civil, FILE * fPlants) {
+  bool flag = true;
   double tempDiam;
   char tempNeigh[MAX_LENGTH];
   char tempArbol [MAX_LENGTH];
@@ -73,15 +67,17 @@ void readPlants(botanicalADT botanical, civilADT civil, FILE * fPlants) {
   //La primera linea del archivo es basura 
   fgets(buf, MAX_LINE, fPlants);
    //Para cualquier otra linea, debo almacenar esa informacion
-     while(fgets(buf, MAX_LINE, fPlants) != NULL){
-       getRegBOT(buf, tempNeigh, 3, tempArbol, 8, &tempDiam, 12);
+     while(flag && (fgets(buf, MAX_LINE, fPlants) != NULL)){
+       getRegBOT(buf, tempNeigh, BOT_NEIGH, tempArbol, BOT_TREE, &tempDiam, BOT_DIAM);
        addTree(civil, tempNeigh);
-       addPlant(botanical, tempArbol, tempDiam);
-     } 
+       flag = addPlant(botanical, tempArbol, tempDiam);
+     }
+  return flag;
 }
 
-void readNeighs (civilADT civil, FILE * fNeighs){
-
+/* Carga iterativamente la informacion de todo el archivo en el civilTAD */
+bool readNeighs (civilADT civil, FILE * fNeighs){
+  bool flag = true;
   long tempPop; 
   char tempNombre[MAX_LENGTH];
   char buf[MAX_LENGTH];
@@ -90,52 +86,47 @@ void readNeighs (civilADT civil, FILE * fNeighs){
     fgets(buf, MAX_LINE, fNeighs);
 
   //Para cualquier otra linea, debo almacenar esa informacion
-    while(fgets(buf, MAX_LINE, fNeighs) != NULL){
-      getRegCIV(buf, tempNombre, 1, &tempPop, 2);
-      addNeigh(civil, tempNombre, tempPop);
+    while(flag && (fgets(buf, MAX_LINE, fNeighs) != NULL)){
+      getRegCIV(buf, tempNombre, NEIGH_NAME, &tempPop, NEIGH_POP);
+      flag = addNeigh(civil, tempNombre, tempPop);
     } 
- 
+  return flag;
 }
 
 
-
+/* Inicializa una nueva query vacia con dos titulares y un nombre de archivo */
 FILE * newQuery (char header1[], char header2[], char queryName[]) {
   FILE * query = fopen(queryName, "w");
   fprintf(query, "%s%s%s\n", header1, DEL, header2);
   return query; 
 }
 
-
-////MODULARIZAR Y SEPARAR !!!!!!!!!!!!!!!!!!
+/*Ejecuta los cambios necesarios y produce el query 1*/
 void q1 (FILE * query, civilADT civil) {
-  FILE * query1=newQuery("BARRIO", "ARBOLES", "query1.csv");
-  sortDescTreeAscAlf(civil);
-  resetNeigh(civil); 
-  do {
-    fprintf(query1, "%s%s%zu\n", getNeighName(civil), DEL, getNeighTrees(civil));
+  resetNeigh(civil);
+    do {
+     fprintf(query, "%s%s%zu\n", getNeighName(civil), DEL, getNeighTrees(civil));
     nextNeigh(civil); 
   } while (! noMoreNeighs(civil));
-  fclose(query1);
+   fclose(query);
 }
 
+/*Ejecuta los cambios necesarios y produce el query 2*/
 void q2(FILE * query, civilADT civil) {
-  FILE * query2=newQuery("BARRIO", "ARBOLES_POR_HABITANTE", "query2.csv");
-  sortDescTBHAscAlf(civil);
   resetNeigh(civil); 
   do {
-    fprintf(query2, "%s%s%.2f\n", getNeighName(civil), DEL, getTreesPerHab(civil));
+    fprintf(query, "%s%s%.2f\n", getNeighName(civil), DEL, getTreesPerHab(civil));
     nextNeigh(civil); 
   } while (! noMoreNeighs(civil));
-  fclose(query2);
+  fclose(query);
 }
 
+/*Ejecuta los cambios necesarios y produce el query 3*/
 void q3 (FILE * query, botanicalADT botanical) {
-  FILE * query3=newQuery("NOMBRE_CIENTIFICO", "PROMEDIO_DIAMETRO", "query3.csv");
-  sortDescDiamAscAlf (botanical);
   resetPlant(botanical); 
   do {
-    fprintf(query3, "%s%s%.2f\n", getPlantName(botanical), DEL, getDiameter(botanical));
+    fprintf(query, "%s%s%.2f\n", getPlantName(botanical), DEL, getDiameter(botanical));
     nextPlant(botanical); 
   } while (! noMorePlants(botanical));
-  fclose(query3);
+  fclose(query);
 }

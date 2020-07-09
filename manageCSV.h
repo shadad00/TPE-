@@ -4,23 +4,47 @@
 **  Copyright (c) 2020 Hadad-Delasoie-Beade. 
 **  Todos los derechos reservados.
 **
-**  La biblioteca manageCSV.h permite manejar archivos .csv para la realizacion de queries especificos.
+**  La biblioteca manageCSV.h permite manejar archivos
+**  csv para la realizacion de queries especificos.
 **  Operaciones basicas de manejo de archivos:
 **  apertura, lectura, almacenaje y escritura. 
+**
+**  Se trata de una biblioteca independiente
+**  pero muy atada al procesamiento de arboles
 */
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "botanicalADT.h"
 #include "civilADT.h"
+#include <stdbool.h>
+
+#ifdef BUE 
+#define NEIGH_NAME 1
+#define NEIGH_POP 2
+#define BOT_NEIGH 3
+#define BOT_TREE 8
+#define BOT_DIAM 12
+#endif
+
+#ifdef VAN
+#define NEIGH_NAME 1
+#define NEIGH_POP 2
+#define BOT_NEIGH 13
+#define BOT_TREE 7
+#define BOT_DIAM 16
+#endif
 
 #ifndef manageCSV_h
 #define manageCSV_h
 
 /* Delimitador de archivo csv */
 #define DEL ";"
+
 /*Maximo lugar ocupable por una linea*/
 #define MAX_LINE 1024
+
 /*Maximo lugar ocupable por un campo*/
 #define MAX_LENGTH 128
 
@@ -31,17 +55,11 @@ FILE * loadFile (char * filename);
 
 /*** LECTURA  ***/
 
-/* Retorna en parametros de salida los datos a cargar en el civilADT leidos de una linea*/
-void getRegCIV(char * line, char * neigh, size_t neighCol, long * pop, size_t popCol);
-
-/* Retorna en parametros de salida los datos a cargar en el botanicalADT leidos de una linea*/
-void getRegBOT(char * line, char * neigh, size_t neighCol, char * scName, size_t scNameCol, double * diam, size_t diamCol) ;
-
 /**Carga iterativamente la informacion de todo el archivo en el civilTAD**/
-void readNeighs (civilADT civil, FILE * fNeighs);
+bool readNeighs (civilADT civil, FILE * fNeighs);
 
 /**Carga iterativamente la informacion de todo el archivo en el botanicTAD**/
-void readPlants(botanicalADT botanical, civilADT civil,FILE * fPlants);
+bool readPlants(botanicalADT botanical, civilADT civil,FILE * fPlants);
 
 /*** ESCRITURA  ***/
 
