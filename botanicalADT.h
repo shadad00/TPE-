@@ -4,14 +4,16 @@
 **  Copyright (c) 2020 Hadad-Delasoie-Beade. 
 **  Todos los derechos reservados.
 **
-**  El ADT botanicalADT maneja y administra colecciones de datos biológicos de plantas. 
-** Puede ser utilizado para organizar información de parques nacionales, parques o similar.
-**
+**  El TAD botanicalADT.h permite almacenar 
+**  una coleccion de datos biologicos y botanicos
+**  de un conjunto de plantas.
 */
+
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #ifndef botanicalADT_h
 #define botanicalADT_h
@@ -31,14 +33,12 @@ void freeBotanical(botanicalADT botanical);
 ** cantidad de ejemplares y actualiza el promedio.
 ** Si no esta en la lista, agrega el nodo. 
 */
-void addPlant(botanicalADT botanical, char * treeName, double diameter);
+bool addPlant(botanicalADT botanical, char * treeName, double diameter);
 
 /*
 ** Ordena la información almacenada en sentido 
 ** decreciente en diámetro y, luego, alfabeticamente.
 */
-/*FALTA IMPLEMENTAR*/
-
 void sortDescDiamAscAlf (botanicalADT botanical);
 
 /*
@@ -60,7 +60,5 @@ double getDiameter (botanicalADT botanical);
 
 void printBotanical (botanicalADT botanical);
 void printSpecies(botanicalADT botanical); 
-/*Completa la query3*/
-void Query3(botanicalADT botanical,FILE * archivo);
 
 #endif /* botanicaADT_h */

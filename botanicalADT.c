@@ -1,172 +1,147 @@
 #include "botanicalADT.h"
-#define BLOCK 10
-#define EPSILON 0.001
+#include <math.h>
+#define EPSILON 0.01
 
-typedef struct treeType { //elemento del vector 
+typedef struct tTree {
 	char * name; 
-	unsigned long quantity; //cantidad de ejemplares
-	double diameter; //suma total de los diametros recolectados
-} treeType; 
+	unsigned long quantity; 
+	double diameter; 
+} tTree; 
 
 typedef struct botanicalCDT {
-	unsigned long qTrees; 
-	unsigned qSpecies; //dimension del vector 
-	treeType * trees;  //puntero al primer elemento del vector de estructuras
-  unsigned current; 
-} botanicalCDT;
+  unsigned qSpecies;
+  tTree ** trees;
+  unsigned current;
+} botanicalCDT; 
 
-/*Inicializa un nuevo TAD */
 botanicalADT newBotanical() {
-	botanicalADT aux = calloc(1, sizeof(botanicalCDT)); 
-	if (aux == NULL) {
-    fprintf(stderr, "Fallo en la asignación de memoria\n") ;
-    exit(2); 
-  }
-	return aux; 
-}  
-
-
-/*Libera los recursos utilizados por el TAD*/
-void freeBotanical(botanicalADT botanical) {	
-	for (int i=0; i<botanical->qSpecies; i++) {
-		free(botanical->trees[i].name); //liberando el nombre de cada arbol
-	}
-  free(botanical->trees); //liberando el vector
-	free(botanical);	//el ADT
+  botanicalADT aux = calloc(1, sizeof(botanicalCDT));
+  //ASSERT ERRNO!! FALTA LO DE BENJA
+  return aux;
 }
 
-/*Agrega en el vector la planta*/
-void addPlant(botanicalADT botanical, char * treeName, double diameter) {
- 
-	botanical->qTrees ++; /*Cantidad de arboles ¿?*/
 
+void freeBotanical(botanicalADT botanical) {
   for (int i=0; i<botanical->qSpecies; i++) {
-	//revisa si existe ya el nodo
-		if (strcmp(botanical->trees[i].name, treeName) == 0) {
-			botanical->trees[i].diameter +=diameter; 
-			botanical->trees[i].quantity ++; 
-			return; 
-		}; 
+    free(botanical->trees[i]->name);
+    free(botanical->trees[i]);
   }
+  free(botanical->trees);
+  free(botanical);
+}
+
+static bool isNULL (void * p) {
+  return (p == NULL);
+}
+
+bool addPlant(botanicalADT botanical, char * treeName, double diameter) {
+  //Chequea si el arbol ya existe
+  //Si existe, actualiza los datos y lo populariza
+  int i; 
+  for (i=0; i<botanical->qSpecies; i++) {
+    if (strcmp(botanical->trees[i]->name, treeName) == 0) {
+      botanical->trees[i]->diameter+=diameter;
+      botanical->trees[i]->quantity++;
+      //Populariza el elemento 
+      if (i!=0) {
+      tTree * aux = botanical->trees[i];
+      botanical->trees[i]=botanical->trees[i-1];
+      botanical->trees[i-1]=aux; 
+      }
+      return true; 
+    }
+  }
+
+  //Si llego hasta aca, el arbol no existe
+  //Agrego el arbol al final
+  //Primero agrando al vector
   
-  	//Si llego hasta aca quiere decir que no existia esa especie en la coleccion
-  //  if (botanical->qSpecies % BLOCK == 0) {
+  tTree ** aux=realloc(botanical->trees, sizeof(tTree *)*(i+1)); //CHEQUEAR ESTO
+       // if (isNULL(botanical->trees[i]->name))
+         // return false;
+  botanical->trees = aux; 
 
-		  botanical->trees = realloc(botanical->trees, sizeof(treeType)*(botanical->qSpecies+1/*BLOCK*/));
-     /*CHEQUEAR MEMORIA SIN PERDER TODOS LOS DATOS*/
-
-      if (botanical->trees == NULL) {
-        fprintf(stderr, "Fallo en la asignación de memoria\n") ; 
-        exit(2);
-      }
-   // }
-
-   
-		botanical->trees[botanical->qSpecies].diameter = diameter; 
-		botanical->trees[botanical->qSpecies].quantity=1;
-		botanical->trees[botanical->qSpecies].name = malloc(sizeof(char)*(strlen(treeName)+1)); 
-
-    if (botanical->trees[botanical->qSpecies].name == NULL) {
-        fprintf(stderr, "Fallo en la asignación de memoria\n") ; 
-        exit(2);
-      }
-
-    
-    strcpy(botanical->trees[botanical->qSpecies].name, treeName); 
-    
-    botanical->qSpecies ++; //se incrementa la dimension del vector
-	}
-
-void printBotanical (botanicalADT botanical) {
-  printf("%10s %5s %5s\n", "ESPECIE", "CANT", "DIAM");
-  for (int i=0; i<botanical->qSpecies; i++) {
-    printf("%10s %5zu %5f\n", botanical->trees[i].name, botanical->trees[i].quantity, botanical->trees[i].diameter);
-  }
+  //El vector es ahora lo suficientemente largo
+  botanical->trees[i]=malloc(sizeof(tTree));
+        //if (isNULL(botanical->trees[i]))
+          //return false;
+  botanical->trees[i]->diameter=diameter; 
+  botanical->trees[i]->quantity=1;
+  botanical->trees[i]->name=malloc(sizeof(char)*(strlen(treeName)+1)); 
+       // if (isNULL(botanical->trees[i]->name))
+         // return false;
+  strcpy(botanical->trees[i]->name,  treeName); 
+  botanical->qSpecies++;
+  return true;  
 }
 
 int noMorePlants (botanicalADT botanical) {
-  return (botanical->current == botanical->qSpecies); 
+  return botanical->current == botanical->qSpecies;
 }
 
 void resetPlant (botanicalADT botanical) {
-  botanical->current=0;
+  botanical->current = 0; 
 }
 
 void nextPlant (botanicalADT botanical) {
-  if (! noMorePlants(botanical))
+  if (! noMorePlants(botanical)) 
     botanical->current ++; 
 }
 
-char * getPlantName (botanicalADT botanical) {
-  return(botanical->trees[botanical->current]).name;
+static bool empty (botanicalADT botanical) {
+  return !botanical->qSpecies; 
 }
+
+char * getPlantName (botanicalADT botanical) {
+  if (! empty(botanical)) 
+    return botanical->trees[botanical->current]->name;
+  else 
+    return NULL; 
+} 
 
 unsigned long getQPlant (botanicalADT botanical) {
-  return(botanical->trees[botanical->current]).quantity;
+  if (! empty(botanical)) 
+    return botanical->trees[botanical->current]->quantity;
+  else 
+    return 0;
 }
+
+static double calcDiam (tTree * tree) {
+  return tree->diameter/tree->quantity;
+} 
 
 double getDiameter (botanicalADT botanical) {
-  return(botanical->trees[botanical->current]).diameter;
+  if (! empty(botanical)) 
+    return calcDiam(botanical->trees[botanical->current]);
+  else 
+    return 0;
 }
 
 
+void printBotanical (botanicalADT botanical) {
+  resetPlant(botanical);
+  while (! noMorePlants(botanical)) {
+    printf("%s\t%zu\t%3f\n", getPlantName(botanical), getQPlant(botanical), getDiameter(botanical)); 
+    nextPlant(botanical);
+  }
+}
+ 
+static int compareDescDiamAscAlf (const void * a, const void * b) {
+ 
+  tTree ** elem1 = (tTree **) a;
+  tTree ** elem2 = (tTree **) b;
+   
 
+  double diam1 = calcDiam(*elem1);
+  double diam2 = calcDiam(*elem2);
 
-/*Ordena el vector  segun diámetro promedio decreciente*/
+ 
+  if ( fabs(diam1-diam2)<EPSILON ) 
+    return strcmp((*elem1)->name, (*elem2)->name);
+  else
+    return diam2 > diam1;
+}
+
 void sortDescDiamAscAlf (botanicalADT botanical) {
-
-/*para cada elemento del vector recorro hasta el final e intercambio con el mas chico*/
-double  mayor;
-int indiceMayor;
-struct treeType aux;
-int c;
-
-for(int i = 0 ; i < botanical->qSpecies-1 ; i++ ){
-  indiceMayor=i;
-  mayor=(botanical->trees[i].diameter/(double)botanical->trees[i].quantity); 
-  for(int j=i+1 ; j < botanical->qSpecies ; j++){
-    
-    double actual=(botanical->trees[j].diameter/(double)botanical->trees[j].quantity);
-    if( actual > mayor){
-      mayor=actual;
-      indiceMayor=j;
-    }else if( (mayor - actual) < EPSILON && (c=strcmp(botanical->trees[indiceMayor].name, botanical->trees[j].name) > 0 )) {
-      mayor = actual;
-      indiceMayor=j;   /*Estan separados por claridad podrian unificarse en un if*/
-
-    }
-   }
-  
-  //intercambio el primero con el menor
-  aux=botanical->trees[indiceMayor];
-  botanical->trees[indiceMayor]=botanical->trees[i];
-  botanical->trees[i]=aux;
-
+   qsort(botanical->trees, botanical->qSpecies, sizeof(tTree *), compareDescDiamAscAlf);
 }
-}
-
-
-void Query3(botanicalADT botanical,FILE * archivo){
-  for(int i = 0 ;i < botanical->qSpecies;i++)
-    fprintf(archivo,"\n%s;%.2f",botanical->trees[i].name,botanical->trees[i].diameter/(float)botanical->trees[i].quantity);
- /*Cerrar el archivo deberia ir en el main*/
-  fclose(archivo);
-}
-
-
-/*funcion de testeo*/
- int CantidadArboles(botanicalADT botanical)
- {
-   return botanical->qSpecies; //retorna la dimension del vector
- }
-
-
-
-
-void printSpecies(botanicalADT botanical) {
-
-  printf("%d", botanical->qSpecies); 
-
-}
-
-
