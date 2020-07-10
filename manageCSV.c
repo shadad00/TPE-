@@ -101,7 +101,6 @@ FILE * newQuery (char header1[], char header2[], char queryName[]) {
   return query; 
 }
 
-/*Ejecuta los cambios necesarios y produce el query 1*/
 void q1 (FILE * query, civilADT civil) {
   resetNeigh(civil);
     do {
@@ -111,7 +110,6 @@ void q1 (FILE * query, civilADT civil) {
    fclose(query);
 }
 
-/*Ejecuta los cambios necesarios y produce el query 2*/
 void q2(FILE * query, civilADT civil) {
   resetNeigh(civil); 
   do {
@@ -121,7 +119,6 @@ void q2(FILE * query, civilADT civil) {
   fclose(query);
 }
 
-/*Ejecuta los cambios necesarios y produce el query 3*/
 void q3 (FILE * query, botanicalADT botanical) {
   resetPlant(botanical); 
   do {
