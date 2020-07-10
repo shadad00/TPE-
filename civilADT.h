@@ -1,12 +1,28 @@
+/*
+**  civilADT.h
+**  Creado por Hadad, Delasoie & Beade el 06/07/20
+**  Copyright (c) 2020 Hadad-Delasoie-Beade. 
+**  Todos los derechos reservados.
+**
+**  El TAD civilADT.h permite almacenar una coleccion
+**  de datos geograficos, demograficos y antropologicos
+**  de una ciudad.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
 #ifndef civilADT_h
 #define civilADT_h
 
 typedef struct civilCDT * civilADT;
 
 /*
-inicializa un nuevo ADT
+Inicializa un nuevo ADT
 */
-civilADT Newcivil();
+civilADT newCivil();
 
 /*
 Libera los recursos usados por el TAD
@@ -14,30 +30,47 @@ Libera los recursos usados por el TAD
 void freeCivil(civilADT civil);
 
 /*
-Agrega un elemento en la lista segun el orden ASCII de los barrios 
-Se inicializa la cantidad de arboles en cero 
+Guarda la informacion de cada barrio con su
+cantidad de habitantes.No admite barrios repetidos,ignorandolos. 
 */
-void addNeigh(civilADT civil,char * barrio,int habitantes);
+bool addNeigh(civilADT civil,char * barrio, unsigned long habitantes);
 
 /*
-Incrementa en uno la cantidad de arboles del nodo
+Incrementa en uno la cantidad de arboles del 
 barrio 
 */
-void IncTrees(civilADT civil, char * barrio);
-
+void addTree(civilADT civil, char * barrio);
 
 /*
-Reordena los datos recolectados en dos listas: 
-a)ordenada por cantidad de arboles por barrio de forma decreciente
-b)ordenada por cantidad de arboles por habitante de forma decreciente 
-En ambos casos en caso de empate define el orden ASCII
+** Funciones para poder iterar. 
 */
-void TreePerHab(civilADT civil);
+
+/*Deuelve 1 si no hay mas barrios en la coleccion*/
+bool noMoreNeighs (civilADT civil);
+/*Resetea el iterador al principio de la coleccion*/
+void resetNeigh (civilADT civil); 
+/*Mueve una unidad el iterador*/
+void nextNeigh (civilADT civil);
+
+/*
+** Funciones que extraen informacion del actual 
+** elemento de la coleccion
+*/
+char * getNeighName (civilADT civil); 
+unsigned long getNeighPop (civilADT civil);
+unsigned long getNeighTrees (civilADT civil);
+double getTreesPerHab (civilADT civil);
+
+/*
+** Funciones SORT para ordenar
+*/
+
+/*Ordena decreciente por arboles por habitantes*/
+void sortDescTBHAscAlf(civilADT civil);
+
+/*Ordena decreciente por arboles por barrio*/
+void sortDescTreeAscAlf(civilADT civil);
 
 
-/*para probarlo*/
-void Imprimir(civilADT civil,FILE * archivo);
-void ImpPrimera(civilADT civil, FILE * archivo);
-void ImpSegunda(civilADT civil,FILE * archivo);
+#endif /*civilADT.h*/
 
-#endif
