@@ -15,6 +15,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <math.h>
+#include <errno.h>
+
 #ifndef botanicalADT_h
 #define botanicalADT_h
 
