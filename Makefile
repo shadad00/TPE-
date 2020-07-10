@@ -1,29 +1,17 @@
-#
-# Makefile para el TP Final de Programacion Imperativa
-#
+COMPILER=gcc 
+FLAGS= -Wall -pedantic -std=c99
+ROOTNAME=procesarArboles
+OUTPUT_BUE=$(ROOTNAME)BUE
+OUTPUT_VAN=$(ROOTNAME)VAN
+VAN_LABEL=VAN
+BUE_LABEL=BUE
+HFILES=manageCSV.h botanicalADT.h civilADT.h 
+CFILES=main.c manageCSV.c botanicalADT.c civilADT.c
 
-#Compilador
-CC = gcc
+clean: 
+	rm $(OUTPUT_FILE) $(FILES)
 
-# Flags para el compilador gcc
-# -g
-# -Wall
-# -pedantic -std=c99
-#  -fsanitize=address
-CFLAGS = -g -Wall -pedantic -std=c99 -fsanitize=address -g
+build:  $(CFILES) $(HFILES)
+	$(COMPILER) $(FLAGS) -D $(VAN_LABEL) -o $(OUTPUT_VAN) $(CFILES)
+	$(COMPILER) $(FLAGS) -D $(BUE_LABEL) -o $(OUTPUT_BUE) $(CFILES)
 
-#Archivos a utilizar
-# SOURCES = Archivos .c
-# OBJETCS = Archivos .o
-# TARGET = archivo output
-SOURCES = 
-OBJECTS = $(SOURCES:.c=.o)
-TARGET =
-
-$(TARGET) : $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
-
-.PHONY: clean
-
-clean:
-	@rm -f $(TARGET) $(OBJECTS) core
