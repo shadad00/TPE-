@@ -20,20 +20,19 @@
 #include "civilADT.h"
 #include <stdbool.h>
 
-#ifdef BUE 
-#define NEIGH_NAME 1
-#define NEIGH_POP 2
-#define BOT_NEIGH 3
-#define BOT_TREE 8
-#define BOT_DIAM 12
-#endif
-
+//Ya valide en el main que VAN o BUE este definido
 #ifdef VAN
 #define NEIGH_NAME 1
 #define NEIGH_POP 2
 #define BOT_NEIGH 13
 #define BOT_TREE 7
 #define BOT_DIAM 16
+#else
+#define NEIGH_NAME 1
+#define NEIGH_POP 2
+#define BOT_NEIGH 3
+#define BOT_TREE 8
+#define BOT_DIAM 12
 #endif
 
 #ifndef manageCSV_h
@@ -76,8 +75,5 @@ void q2 (FILE * query, civilADT civil);
 
 /*Ejecuta los cambios necesarios y produce el query 3*/
 void q3 (FILE * query, botanicalADT botanical);
-
-
-
 
 #endif /*CSV.h*/
