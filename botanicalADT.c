@@ -1,5 +1,5 @@
 #include "botanicalADT.h"
-#include <math.h>
+
 #define EPSILON 0.01
 
 typedef struct tTree {
@@ -20,6 +20,16 @@ botanicalADT newBotanical() {
   return aux;
 }
 
+static int checkMem (void * pointer) {
+   if (errno == 12) {
+    fprintf(stderr, "Fallo en la asignación de memoria\n") ; 
+    return 1; 
+  }   
+  return 0;
+}
+
+
+
 
 void freeBotanical(botanicalADT botanical) {
   for (int i=0; i<botanical->qSpecies; i++) {
@@ -28,10 +38,6 @@ void freeBotanical(botanicalADT botanical) {
   }
   free(botanical->trees);
   free(botanical);
-}
-
-static bool isNULL (void * p) {
-  return (p == NULL);
 }
 
 bool addPlant(botanicalADT botanical, char * treeName, double diameter) {
@@ -57,19 +63,18 @@ bool addPlant(botanicalADT botanical, char * treeName, double diameter) {
   //Primero agrando al vector
   
   tTree ** aux=realloc(botanical->trees, sizeof(tTree *)*(i+1)); //CHEQUEAR ESTO
-       // if (isNULL(botanical->trees[i]->name))
-         // return false;
+        if (checkMem(aux))
+          return false;
   botanical->trees = aux; 
-
   //El vector es ahora lo suficientemente largo
   botanical->trees[i]=malloc(sizeof(tTree));
-        //if (isNULL(botanical->trees[i]))
-          //return false;
+          if (checkMem(botanical->trees[i]))
+            return false;
   botanical->trees[i]->diameter=diameter; 
   botanical->trees[i]->quantity=1;
   botanical->trees[i]->name=malloc(sizeof(char)*(strlen(treeName)+1)); 
-       // if (isNULL(botanical->trees[i]->name))
-         // return false;
+        if (checkMem(botanical->trees[i]->name))
+          return false;
   strcpy(botanical->trees[i]->name,  treeName); 
   botanical->qSpecies++;
   return true;  
@@ -118,13 +123,6 @@ double getDiameter (botanicalADT botanical) {
 }
 
 
-void printBotanical (botanicalADT botanical) {
-  resetPlant(botanical);
-  while (! noMorePlants(botanical)) {
-    printf("%s\t%zu\t%3f\n", getPlantName(botanical), getQPlant(botanical), getDiameter(botanical)); 
-    nextPlant(botanical);
-  }
-}
  
 static int compareDescDiamAscAlf (const void * a, const void * b) {
  
