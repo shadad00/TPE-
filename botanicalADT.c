@@ -1,26 +1,19 @@
 #include "botanicalADT.h"
 
 #define EPSILON 0.01
-/*Name: nombre del arbol
- * quantity: cantidad de ejemplares
- * diameter: suma de los diametros
-*/
+
 typedef struct tTree {
-	char * name; 
-	unsigned long quantity; 
-	double diameter; 
+	char * name; //Nombre de la especie
+	unsigned long quantity; //Cantidad de la misma especie
+	double diameter; //Suma de los diametros
 } tTree; 
-/* qSpecies:cantidad diferentes de especies de arboles
- * trees vector de punteros a tTree
- * current: indice del elemento actual sobre el que se esta interactuando
-*/
+
 typedef struct botanicalCDT {
-  unsigned qSpecies;
+  size_t qSpecies; //Cantidad de especies distintias
   tTree ** trees;
-  unsigned current;
+  size_t current;
 } botanicalCDT; 
 
-/*Crea un nuevo ADT*/
 botanicalADT newBotanical() {
   botanicalADT aux = calloc(1, sizeof(botanicalCDT));
   //ASSERT ERRNO!! FALTA LO DE BENJA
@@ -36,11 +29,9 @@ static int checkMem (void * pointer) {
 }
 
 
-
-/*Libera los recursos ocupados por el CDT.
+/*Libera los recursos ocupados por el ADT.
  *Primero libera el puntero al nombre del arbol
-  Luego libera el puntero a la estructura y por ultimo libera
-  el ADT
+  Luego libera el puntero a la estructura y por ultimo libera el ADT
  **/
 void freeBotanical(botanicalADT botanical) {
   for (int i=0; i<botanical->qSpecies; i++) {
@@ -107,7 +98,7 @@ void nextPlant (botanicalADT botanical) {
     botanical->current ++; 
 }
 
-/*Retorna 1 si no se almaceno informacion en el CDT*/
+/*Retorna 1 si no se almaceno informacion en el ADT*/
 static bool empty (botanicalADT botanical) {
   return !botanical->qSpecies; 
 }
@@ -128,7 +119,7 @@ unsigned long getQPlant (botanicalADT botanical) {
     return 0;
 }
 
-/*Calcula el cociente entre el diametro y la cantidad de ejemplares del elemento al que apunta tree*/
+/*Funcion auxiliar que calcula el cociente entre el diametro y la cantidad de ejemplares del elemento al que apunta tree*/
 static double calcDiam (tTree * tree) {
   return tree->diameter/tree->quantity;
 } 
@@ -142,9 +133,8 @@ double getDiameter (botanicalADT botanical) {
 }
 
 
-/*retorna 1 si elemento el diametro del elemento al que apunta a es mayor al diametro del ele
- * mento del que apunta b.
- * Es funcion auxiliar pasada por parametro al qsort.*/ 
+/*Retorna 1 si elemento el diametro del elemento al que apunta a es mayor al diametro del elemento del que apunta b.
+Es funcion auxiliar pasada por parametro al qsort.*/ 
 static int compareDescDiamAscAlf (const void * a, const void * b) {
  
   tTree ** elem1 = (tTree **) a;
@@ -161,7 +151,7 @@ static int compareDescDiamAscAlf (const void * a, const void * b) {
     return diam2 > diam1;
 }
 
-/*Ordena el vector de manera decreciente de acuerdo al diametro promedio de la especie*/
+/*Ordena el vector de manera decreciente de acuerdo al diametro promedio de la especie y luego alfabeticamente*/
 void sortDescDiamAscAlf (botanicalADT botanical) {
    qsort(botanical->trees, botanical->qSpecies, sizeof(tTree *), compareDescDiamAscAlf);
 }
