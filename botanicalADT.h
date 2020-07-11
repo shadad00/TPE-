@@ -30,11 +30,8 @@ botanicalADT newBotanical();
 void freeBotanical(botanicalADT botanical);
 
 /* 
-** Agrega un elemento a la coleccion almacenada ordenado
-** alfabeticamente de acuerdo al nombre de la especie.
-** Si el arbol ya esta en la coleccion incrementa la 
-** cantidad de ejemplares y actualiza el promedio.
-** Si no esta en la lista, agrega el nodo. 
+Almacena el nombre de la especie y el diametro promedio de la misma.
+Retorna uno si puede almacenar de manera correcta.
 */
 bool addPlant(botanicalADT botanical, char * treeName, double diameter);
 
@@ -47,21 +44,22 @@ void sortDescDiamAscAlf (botanicalADT botanical);
 /*
 ** Funciones para poder iterar. 
 */
+/*Retorna uno si no hay mas arboles almacenados en el iterador*/
 int noMorePlants (botanicalADT botanical);
-void resetPlant (botanicalADT botanical); 
+/*Resetea el iterador al primer elemento de la coleccion*/
+void resetPlant (botanicalADT botanical);
+/*Actualiza el iterador al siguiente elemento*/
 void nextPlant (botanicalADT);
 
 /*
 ** Funciones que extraen informacion del actual 
 ** elemento de la coleccion
 */
-
-char * getPlantName (botanicalADT botanical); 
+/*Retorna un puntero al nombre del arbol*/
+char * getPlantName (botanicalADT botanical);
+/*Retorna la cantidad de ejemplares del arbol al que apunta el iterador*/
 unsigned long getQPlant (botanicalADT botanical);
+/*Retorna el diametro promedio de la especie a la que apunta el iterador*/
 double getDiameter (botanicalADT botanical);
-
-
-void printBotanical (botanicalADT botanical);
-void printSpecies(botanicalADT botanical); 
 
 #endif /* botanicaADT_h */

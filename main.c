@@ -21,19 +21,19 @@ int main (int argc, char * argv[]){
    return 2; 
   #endif 
 
-  /*Chequear cantidad de parametros*/
-	 if (argc != 3) {
-	   fprintf(stderr, "Cantidad de parametros incorrecta\n"); 
-	   return 1;
+/*Chequear cantidad de parametros, en caso de error aborta la ejecucion*/
+   if (argc != 3) {
+	fprintf(stderr, "Cantidad de parametros incorrecta\n"); 
+	return 1;
    }
-  
-	/*Preparacion inicial de los ADTs y archivos*/
+ 
+/*Preparacion inicial de los ADTs y archivos*/
   botanicalADT datosPlantas = newBotanical();
   civilADT datosBarrios = newCivil();
   FILE * pBarrios = NULL, * pArboles = NULL;
   
 
-  /* Abre los archivos a ejecutar */
+/* Abre los archivos a ejecutar, en caso de error aborta la ejecucion */
   pBarrios = loadFile(argv[2]);
   if (errno == 2) {
        return errno; 
@@ -46,33 +46,33 @@ int main (int argc, char * argv[]){
   }
 
 
-   /*Lectura de los archivos*/
-	if(readNeighs(datosBarrios, pBarrios) != true) {
+/*Lectura de los archivos*/
+   if(readNeighs(datosBarrios, pBarrios) != true) {
        goodbye(pArboles, pBarrios, datosPlantas, datosBarrios);
   }
   
 
    if(readPlants(datosPlantas, datosBarrios, pArboles) != true) {
-        goodbye(pArboles, pBarrios, datosPlantas,datosBarrios);
+       goodbye(pArboles, pBarrios, datosPlantas,datosBarrios);
   }
   
   
  
-     //Archivo para la Query1 
-     FILE * query1 = newQuery("BARRIO", "ARBOLES", "query1.csv");
-	   sortDescTreeAscAlf(datosBarrios);
-	   q1(query1, datosBarrios);	
+/*Archivo para la Query1*/ 
+   FILE * query1 = newQuery("BARRIO", "ARBOLES", "query1.csv");
+       sortDescTreeAscAlf(datosBarrios);
+       q1(query1, datosBarrios);	
   
   
-    // Archivo para la Query2
-     FILE * query2 = newQuery("BARRIO", "ARBOLES_POR_HABITANTE", "query2.csv");
-     sortDescTBHAscAlf(datosBarrios);
-     q2(query2, datosBarrios);	
+/*Archivo para la Query2*/
+   FILE * query2 = newQuery("BARRIO", "ARBOLES_POR_HABITANTE", "query2.csv");
+       sortDescTBHAscAlf(datosBarrios);
+       q2(query2, datosBarrios);	
   
-    // Archivo para la Query3
-    FILE * query3 = newQuery("NOMBRE_CIENTIFICO", "PROMEDIO_DIAMETRO", "query3.csv");
-    sortDescDiamAscAlf (datosPlantas);
-    q3(query3, datosPlantas);	
+/* Archivo para la Query3*/
+   FILE * query3 = newQuery("NOMBRE_CIENTIFICO", "PROMEDIO_DIAMETRO", "query3.csv");
+       sortDescDiamAscAlf (datosPlantas);
+       q3(query3, datosPlantas);	
 
 	
   /*Liberacion de la memoria reservada*/
@@ -82,10 +82,10 @@ int main (int argc, char * argv[]){
    return 0;
 } 
 
-
+/*Libera toda la memoria reservada durante la ejecucion del programa*/
 void goodbye(FILE * f1, FILE * f2, botanicalADT botanical, civilADT civil) {
   freeBotanical(botanical);
-	freeCivil(civil); 
+  freeCivil(civil); 
   fclose(f1);
   fclose(f2);
 }

@@ -195,14 +195,15 @@ unsigned long getNeighTrees (civilADT civil){
 
 /*Devuelve el cociente entre arboles y habitantes del elemento apuntado por el iterador*/
 double getTreesPerHab (civilADT civil){
-     int actual=civil->indice;
-     return calcTBH(civil->vector[actual]);
+    
+     return calcTBH(civil->vector[civil->indice]);
 
 }
 
 
 
-/*Ordena en forma descendiente por cantidad de arboles por habitantes*/
+/*Funcion auxiliar que retorna 1 si b apunta a un elemento que tiene mas arboles que 
+ * a.*/
 static int compareDescTBHAscAlf (const void * a, const void * b){
 
   struct elementos ** elem1 = (struct elementos **) a;
@@ -220,7 +221,8 @@ static int compareDescTBHAscAlf (const void * a, const void * b){
 void sortDescTBHAscAlf(civilADT civil) {
   qsort(civil->vector, civil->dim, sizeof(struct elementos*), compareDescTBHAscAlf);
 }
-
+/*Funcion auxiliar que retorna 1 si el elemento apuntado por b es mayor que elemento apuntado por 
+ * a.*/
 static int compareDescTreeAscAlf (const void * a, const void * b){
 
   struct elementos ** elem1 = (struct elementos**) a;
@@ -233,7 +235,7 @@ static int compareDescTreeAscAlf (const void * a, const void * b){
   else
     return (*elem2)->CantArboles > (*elem1)->CantArboles;
 }
-
+/*Ordena el vector de manera descendiente con respecto a la cantidad de arboles por barrio*/
 void sortDescTreeAscAlf(civilADT civil){
   qsort(civil->vector, civil->dim, sizeof(struct elementos *), compareDescTreeAscAlf);
 }

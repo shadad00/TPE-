@@ -1,19 +1,26 @@
 #include "botanicalADT.h"
 
 #define EPSILON 0.01
-
+/*Name: nombre del arbol
+ * quantity: cantidad de ejemplares
+ * diameter: suma de los diametros
+*/
 typedef struct tTree {
 	char * name; 
 	unsigned long quantity; 
 	double diameter; 
 } tTree; 
-
+/* qSpecies:cantidad diferentes de especies de arboles
+ * trees vector de punteros a tTree
+ * current: indice del elemento actual sobre el que se esta interactuando
+*/
 typedef struct botanicalCDT {
   unsigned qSpecies;
   tTree ** trees;
   unsigned current;
 } botanicalCDT; 
 
+/*Crea un nuevo ADT*/
 botanicalADT newBotanical() {
   botanicalADT aux = calloc(1, sizeof(botanicalCDT));
   //ASSERT ERRNO!! FALTA LO DE BENJA
@@ -30,7 +37,11 @@ static int checkMem (void * pointer) {
 
 
 
-
+/*Libera los recursos ocupados por el CDT.
+ *Primero libera el puntero al nombre del arbol
+  Luego libera el puntero a la estructura y por ultimo libera
+  el ADT
+ **/
 void freeBotanical(botanicalADT botanical) {
   for (int i=0; i<botanical->qSpecies; i++) {
     free(botanical->trees[i]->name);
@@ -80,23 +91,28 @@ bool addPlant(botanicalADT botanical, char * treeName, double diameter) {
   return true;  
 }
 
+/*Devuelve 1 si no hay mas elementos en el vector*/
 int noMorePlants (botanicalADT botanical) {
   return botanical->current == botanical->qSpecies;
 }
 
+/*Reinicia el iterador*/
 void resetPlant (botanicalADT botanical) {
   botanical->current = 0; 
 }
 
+/*Aumenta en uno al iterador*/
 void nextPlant (botanicalADT botanical) {
   if (! noMorePlants(botanical)) 
     botanical->current ++; 
 }
 
+/*Retorna 1 si no se almaceno informacion en el CDT*/
 static bool empty (botanicalADT botanical) {
   return !botanical->qSpecies; 
 }
 
+/*Retorna un puntero al noombre del arbol del elemento actual*/
 char * getPlantName (botanicalADT botanical) {
   if (! empty(botanical)) 
     return botanical->trees[botanical->current]->name;
@@ -104,6 +120,7 @@ char * getPlantName (botanicalADT botanical) {
     return NULL; 
 } 
 
+/*Retorna la cantidad de ejemplares del arbol al que apunta el iterador*/
 unsigned long getQPlant (botanicalADT botanical) {
   if (! empty(botanical)) 
     return botanical->trees[botanical->current]->quantity;
@@ -111,10 +128,12 @@ unsigned long getQPlant (botanicalADT botanical) {
     return 0;
 }
 
+/*Calcula el cociente entre el diametro y la cantidad de ejemplares del elemento al que apunta tree*/
 static double calcDiam (tTree * tree) {
   return tree->diameter/tree->quantity;
 } 
 
+/*Retorna el diametro promedio del elemento al que apunta el iterador*/
 double getDiameter (botanicalADT botanical) {
   if (! empty(botanical)) 
     return calcDiam(botanical->trees[botanical->current]);
@@ -123,7 +142,9 @@ double getDiameter (botanicalADT botanical) {
 }
 
 
- 
+/*retorna 1 si elemento el diametro del elemento al que apunta a es mayor al diametro del ele
+ * mento del que apunta b.
+ * Es funcion auxiliar pasada por parametro al qsort.*/ 
 static int compareDescDiamAscAlf (const void * a, const void * b) {
  
   tTree ** elem1 = (tTree **) a;
@@ -140,6 +161,7 @@ static int compareDescDiamAscAlf (const void * a, const void * b) {
     return diam2 > diam1;
 }
 
+/*Ordena el vector de manera decreciente de acuerdo al diametro promedio de la especie*/
 void sortDescDiamAscAlf (botanicalADT botanical) {
    qsort(botanical->trees, botanical->qSpecies, sizeof(tTree *), compareDescDiamAscAlf);
 }

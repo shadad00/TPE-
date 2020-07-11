@@ -29,15 +29,15 @@ Libera los recursos usados por el TAD
 */
 void freeCivil(civilADT civil);
 
-/*
-Guarda la informacion de cada barrio con su
+/*Guarda la informacion de cada barrio con su
 cantidad de habitantes.No admite barrios repetidos,ignorandolos. 
+Devuelve true or false dependiendo de si pudo almacenar o no la informacion.
 */
 bool addNeigh(civilADT civil,char * barrio, unsigned long habitantes);
 
 /*
 Incrementa en uno la cantidad de arboles del 
-barrio 
+barrio
 */
 void addTree(civilADT civil, char * barrio);
 
@@ -45,7 +45,7 @@ void addTree(civilADT civil, char * barrio);
 ** Funciones para poder iterar. 
 */
 
-/*Deuelve 1 si no hay mas barrios en la coleccion*/
+/*Deuelve true si no hay mas barrios en la coleccion*/
 bool noMoreNeighs (civilADT civil);
 /*Resetea el iterador al principio de la coleccion*/
 void resetNeigh (civilADT civil); 
