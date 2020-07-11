@@ -54,26 +54,35 @@ FILE * loadFile (char * filename);
 
 /*** LECTURA  ***/
 
-/**Carga iterativamente la informacion de todo el archivo en el civilTAD**/
+/*Se encarga de la lectura del archivo que contiene nombre de barrios y cantidad de
+ * habitantes y de pasarlo al TAD respectivo
+*/
 bool readNeighs (civilADT civil, FILE * fNeighs);
 
-/**Carga iterativamente la informacion de todo el archivo en el botanicTAD**/
+/* Se encarga de la lectura del archivo que contiene nombre del barrio , nombre del arbol
+ * y diametro del mismo.Transfiere la informacion recuperada al ADT correspondiente.
+*/
 bool readPlants(botanicalADT botanical, civilADT civil,FILE * fPlants);
 
 /*** ESCRITURA  ***/
-
-/*Inicializa una nueva query vacia con dos titulares y un nombre de archivo*/
-//STATIC O SIRVE PARA ALGO?
+/*Crea un nuevo archivo de nombre queryName o lo abre si ya existiese y lo reescribe.
+ * Le agrega el encabezado header1:header2
+*/
 FILE * newQuery (char header1[], char header2[], char queryName[]);
 
-
-/*Ejecuta los cambios necesarios y produce el query 1*/
+/*Carga en el archivo query el nombre de todos los barrios seguido de su cantidad de habitantes de 
+ * manera decreciente por habitantes por barrio
+ */
 void q1 (FILE * query, civilADT civil);
 
-/*Ejecuta los cambios necesarios y produce el query 2*/
+/*Guarda en el archivo query el  nombre de los barrios seguido del cociente entre los arboles por cantidad de habi
+ * tantes de manera decreciente 
+*/
 void q2 (FILE * query, civilADT civil);
 
-/*Ejecuta los cambios necesarios y produce el query 3*/
+/*Guarda en el archivo query el nombre de todos los arboles seguido del diametro promedio en orden
+ * decreciente.
+*/
 void q3 (FILE * query, botanicalADT botanical);
 
 #endif /*CSV.h*/
