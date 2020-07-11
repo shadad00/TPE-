@@ -2,14 +2,7 @@
 #include "botanicalADT.h"
 #include "civilADT.h"
 #include "manageCSV.h"
-#include <time.h>
 #include <errno.h>
-
-
-#define DEL ";"
-
-/* Checkea el valor de la variable global errno */
-void checkError(FILE * f1, FILE * f2, botanicalADT botanical, civilADT civil);
 
 /* Libera la memoria utilizada y cierra los archivos abiertos */
 void goodbye(FILE * f1, FILE * f2, botanicalADT botanical, civilADT civil);
