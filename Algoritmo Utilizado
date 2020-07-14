@@ -1,4 +1,0 @@
-// QUERY1y2)
-// a)luego de haber recorrido el  archivo barrios.csv nos queda:
-//  una lista ordenada  segun el orden alfabetico de los barrios , y la cantidad de habitantes por barrio.El contador de arboles inicia en cero.Por cada columna del archivo arboles.csv se incrementa la cantidad de arboles de cada nodo.
-//  se imprimen en los archivos de salida las informaciones requeridas con el orden requerido.
