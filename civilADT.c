@@ -1,15 +1,8 @@
 #include "civilADT.h"
+#include <stdbool.h>
+#include "checkError.h"
 
 #define EPSILON 0.01
-
-/*FRONT END*/
-int checkMem (void * pointer) {
-   if (pointer == NULL) {
-    fprintf(stderr, "Fallo en la asignación de memoria\n") ; 
-    return 1; 
-  }   
-  return 0;
-}
 
 /*
 La estructura consta de un vector de punteros a estructura, donde cada puntero apunta a una estructura del tipo tNeigh
@@ -24,30 +17,24 @@ typedef struct civilCDT{
 /*Elemento al que apunta cada vector*/
 typedef struct tNeigh {
   char * name;//nombre del barrio
-  size_t pop;//cantidad de habitantes 
-  size_t qTrees;//cantidad de arboles en el barrio
+  long pop;//cantidad de habitantes 
+  long qTrees;//cantidad de arboles en el barrio
 } tNeigh;
 
-
-/*Calcula arboles por habitante*/
-static double calcTBH (struct tNeigh * neigh) {
-  return neigh->qTrees/(double)neigh->pop;
+/*Funcion auxiliar que trunca a dos decimales*/
+static float truncate(float numero){
+  numero*=100;
+  numero=(int)(numero);
+  return numero/100;
 }
+
 
 /*Inicializa un nuevo ADT*/
-civilADT newCivil(){
-  civilADT aux;
-  aux=calloc(1,sizeof(struct civilCDT));
-  if(checkMem(aux))
-    return NULL;/*Chequear*/
-  else 
-    return aux;
-
-  checkMem(aux);
+civilADT newCivil(int * flag){
+  civilADT aux=calloc(1,sizeof(struct civilCDT));
+  *flag=checkMem();
   return aux;
 }
-
-
 
 /*
 Libera los recursos usados por el TAD
@@ -66,49 +53,57 @@ void freeCivil(civilADT civil){
   free(civil);
 }
 
-
 /*
 Agrega un elemento en la lista segun el orden ASCII de los barrios 
 Se inicializa la cantidad de arboles en cero.
 Recorre el vector para asegurarse que no haya repetidos.Si exitiesen repetidos en el archivo se consideraria un error y se ignoraria la segunda aparicion. 
 */
-bool addNeigh(civilADT civil,char * barrio, unsigned long habitantes){
-  int c;
+bool addNeigh(civilADT civil, char * barrio, unsigned long habitantes){
+
+
   /*Buscar repetidos, si encuentra lo ignora*/
-  for(int i = 0 ; i < civil->qNeighs ; i++){
-    if( (c=strcmp(civil->neighs[i]->name,barrio)) == 0 )
-      return 1;
-  }
+  for(int i = 0 ; i < civil->qNeighs ; i++)
+    if( ! checkRep(civil->neighs[i]->name, barrio) )
+      return true;
+  
 
   /* Agrega al final , reservando una posicion mas */
   tNeigh ** aux;
   int Dim = civil->qNeighs;
-  aux = realloc(civil->neighs,((Dim)+1)*sizeof(struct elementos*) );
-  if(checkMem(aux))
-    return 0; //Que pasa si no hay memoria? hacer Int?
-  else 
-    civil->neighs=aux;
+  aux = realloc(civil->neighs,(Dim+1)*sizeof(struct elementos*));
+
+  if( !checkMem() )
+    return false; 
+
+  civil->neighs=aux;
   
   /*Cargo la informacion*/
    
-  civil->neighs[Dim]=malloc(sizeof(tNeigh)); // y el checkmem de esto?
+  civil->neighs[Dim]=malloc(sizeof(tNeigh)); 
   
-  if( checkMem(civil->neighs[Dim]) )
-    return 0;
+  if( ! checkMem() )
+    return false;
 
   civil->neighs[Dim]->pop=habitantes;
   civil->neighs[Dim]->qTrees=0;
   int largo=strlen(barrio);
   char * aux1=malloc((largo+1)*sizeof(char));
-  if(checkMem(aux1))
-    return 0; //fallo asignacion de memoria
-  else{
-    civil->neighs[Dim]->name=aux1;
-    strcpy(civil->neighs[Dim]->name,barrio);
-  }
-  (civil->qNeighs)++;
 
-  return 1;
+  if(! checkMem() )
+    return false; 
+  
+  civil->neighs[Dim]->name=aux1;
+  strcpy(civil->neighs[Dim]->name,barrio);
+  (civil->qNeighs)++;
+  return true;
+}
+
+/*Calcula arboles por habitante*/
+static float calcTBH (struct tNeigh * neigh) {
+  if(neigh!=NULL && neigh->pop!=0)
+    return truncate(neigh->qTrees/(float)neigh->pop);
+  else 
+    return -1;
 }
 
 
@@ -118,7 +113,7 @@ barrio.Intercambia con el elemento anterior.
 El objetivo de esto es mejorar el caso promedio. 
 Los elementos mas populares quedan mas adelante
 */
-void addTree(civilADT civil, char * barrio){
+bool addTree(civilADT civil, char * barrio){
   /*Recorre el vector hasta encontrar el elemento*/
   int c ;
   for(int i = 0 ; i < civil->qNeighs ; i++)
@@ -132,11 +127,11 @@ void addTree(civilADT civil, char * barrio){
         civil->neighs[i]=civil->neighs[i-1];
         civil->neighs[i-1]=aux;
       }
+      return true; 
     }
-  
-  }
-
-
+    //Devuelve 0 si el barrio no existia
+  return false; 
+}
 
 
 /*Resetea el iterador al principio de la coleccion*/
@@ -147,7 +142,7 @@ void resetNeigh (civilADT civil){
 
 /*Devuelve 1 si no hay mas barrios en la coleccion*/
 bool noMoreNeighs (civilADT civil){
-  return civil->current==civil->qNeighs;
+    return  isEmptyCivil(civil) ||civil->current==civil->qNeighs ;
 }
 
 /*Mueve una unidad el iterador*/
@@ -157,41 +152,38 @@ void nextNeigh (civilADT civil){
 }
 
 /*Revisa si el TAD esta vacio*/
-static int empty (civilADT civil) {
-  return ! civil->qNeighs; 
+bool isEmptyCivil (civilADT civil) {
+  return civil == NULL || ! civil->qNeighs; 
 }
 
 /*Devuelve el puntero al nombre del barrio al que apunta el iterador*/
 char * getNeighName (civilADT civil){
-  if(!empty(civil))
-    return civil->neighs[civil->current]->name;
-  else 
-    return NULL; 
+  if(isEmptyCivil(civil))
+    return NULL;
+  return civil->neighs[civil->current]->name; 
 }
 
 /*Devuelve la cantidad de habitantes del elemento actual del iterador*/
-unsigned long getNeighPop (civilADT civil){
-  if(!empty(civil))
-    return civil->neighs[civil->current]->pop;
-  else 
-    return 0;
+ long getNeighPop (civilADT civil){
+  if(isEmptyCivil(civil))
+    return -1; 
+  return civil->neighs[civil->current]->pop;
 }
 
 
 /*Devuelve la cantidad de arboles del elemento actual apuntado por el iterador*/
-unsigned long getNeighTrees (civilADT civil){
-  if(!empty(civil))
-    return civil->neighs[civil->current]->qTrees;
-  else 
-    return 0; 
+long getNeighTrees (civilADT civil){
+  if(isEmptyCivil(civil))
+      return -1; 
+  return civil->neighs[civil->current]->qTrees;
 }
 
 
 /*Devuelve el cociente entre arboles y habitantes del elemento apuntado por el iterador*/
-double getTreesPerHab (civilADT civil){
-     int actual=civil->current;
-     return calcTBH(civil->neighs[actual]);
-
+float getTreesPerHab (civilADT civil){
+  if( isEmptyCivil(civil) )
+    return -1; 
+  return calcTBH(civil->neighs[civil->current]);
 }
 
 
@@ -202,8 +194,8 @@ static int compareDescTBHAscAlf (const void * a, const void * b){
   tNeigh ** elem1 = (tNeigh **) a;
   tNeigh ** elem2 = (tNeigh **) b;
 
-  double TBH1 = calcTBH(*elem1);
-  double TBH2 = calcTBH(*elem2);
+  float TBH1 = calcTBH(*elem1);
+  float TBH2 = calcTBH(*elem2);
   if ( fabs(TBH1-TBH2) < EPSILON )
     return strcmp((*elem1)->name, (*elem2)->name);
   else
@@ -212,7 +204,8 @@ static int compareDescTBHAscAlf (const void * a, const void * b){
 
 /*Descendiente por cantidad de arboles por habitante*/
 void sortDescTBHAscAlf(civilADT civil) {
-  qsort(civil->neighs, civil->qNeighs, sizeof(struct elementos*), compareDescTBHAscAlf);
+  if (! isEmptyCivil(civil)) 
+    qsort(civil->neighs, civil->qNeighs, sizeof(struct elementos*), compareDescTBHAscAlf);
 }
 
 /*Funcion auxiliar que retorna 1 si el elemento apuntado por b es mayor que elemento apuntado por a.*/
@@ -227,6 +220,10 @@ static int compareDescTreeAscAlf (const void * a, const void * b){
     return (*elem2)->qTrees > (*elem1)->qTrees;
 }
 
+
+/*Ordena el vector de manera decreciente por arboles por barrio*/
 void sortDescTreeAscAlf(civilADT civil){
+  if ( ! isEmptyCivil(civil) ) 
   qsort(civil->neighs, civil->qNeighs, sizeof(struct elementos *), compareDescTreeAscAlf);
 }
+

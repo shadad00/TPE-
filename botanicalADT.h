@@ -14,9 +14,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-#include <math.h>
 #include <errno.h>
+#include <math.h>
+#include "checkError.h"
 
 #ifndef botanicalADT_h
 #define botanicalADT_h
@@ -30,10 +30,13 @@ botanicalADT newBotanical();
 void freeBotanical(botanicalADT botanical);
 
 /* 
-Almacena el nombre de la especie y el diametro promedio de la misma.
-Retorna uno si puede almacenar de manera correcta.
+** Agrega un elemento a la coleccion almacenada ordenado
+** alfabeticamente de acuerdo al nombre de la especie.
+** Si el arbol ya esta en la coleccion incrementa la 
+** cantidad de ejemplares y actualiza el promedio.
+** Si no esta en la lista, agrega el nodo. 
 */
-bool addPlant(botanicalADT botanical, char * treeName, double diameter);
+bool addPlant(botanicalADT botanical, char * treeName, float diameter);
 
 /*
 ** Ordena la información almacenada en sentido 
@@ -44,22 +47,24 @@ void sortDescDiamAscAlf (botanicalADT botanical);
 /*
 ** Funciones para poder iterar. 
 */
-/*Retorna uno si no hay mas arboles almacenados en el iterador*/
 int noMorePlants (botanicalADT botanical);
-/*Resetea el iterador al primer elemento de la coleccion*/
-void resetPlant (botanicalADT botanical);
-/*Actualiza el iterador al siguiente elemento*/
+void resetPlant (botanicalADT botanical); 
 void nextPlant (botanicalADT);
+
+/*
+** Devuelve 1 si el TAD estaba vacio o no fue
+** inicializado
+*/
+bool isEmptyBotanical (botanicalADT botanical);
 
 /*
 ** Funciones que extraen informacion del actual 
 ** elemento de la coleccion
 */
-/*Retorna un puntero al nombre del arbol*/
-char * getPlantName (botanicalADT botanical);
-/*Retorna la cantidad de ejemplares del arbol al que apunta el iterador*/
+
+char * getPlantName (botanicalADT botanical); 
 unsigned long getQPlant (botanicalADT botanical);
-/*Retorna el diametro promedio de la especie a la que apunta el iterador*/
-double getDiameter (botanicalADT botanical);
+//Devuelve truncado a dos decimales 
+float getDiameter (botanicalADT botanical);
 
 #endif /* botanicaADT_h */

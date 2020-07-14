@@ -19,8 +19,11 @@
 #include "botanicalADT.h"
 #include "civilADT.h"
 #include <stdbool.h>
+#include <math.h>
+#include "checkError.h"
 
 //Ya valide en el main que VAN o BUE este definido
+//Columnas donde se encuentra cada informacion necesaria
 #ifdef VAN
 #define NEIGH_NAME 1
 #define NEIGH_POP 2
@@ -35,8 +38,9 @@
 #define BOT_DIAM 12
 #endif
 
-#ifndef manageCSV_h
-#define manageCSV_h
+// Cantidad de columnas de los archivos a crear
+#define NUMCOLSCIV 2
+#define NUMCOLSBOT 3
 
 /* Delimitador de archivo csv */
 #define DEL ";"
@@ -47,6 +51,9 @@
 /*Maximo lugar ocupable por un campo*/
 #define MAX_LENGTH 128
 
+#ifndef manageCSV_h
+#define manageCSV_h
+
 /*** APERTURA  ***/
 
 /* Devuelve un puntero a filename. Aborta en caso de error */
@@ -54,35 +61,29 @@ FILE * loadFile (char * filename);
 
 /*** LECTURA  ***/
 
-/*Se encarga de la lectura del archivo que contiene nombre de barrios y cantidad de
- * habitantes y de pasarlo al TAD respectivo
-*/
+/**Carga iterativamente la informacion de todo el archivo en el civilTAD**/
 bool readNeighs (civilADT civil, FILE * fNeighs);
 
-/* Se encarga de la lectura del archivo que contiene nombre del barrio , nombre del arbol
- * y diametro del mismo.Transfiere la informacion recuperada al ADT correspondiente.
-*/
+/**Carga iterativamente la informacion de todo el archivo en el botanicTAD**/
 bool readPlants(botanicalADT botanical, civilADT civil,FILE * fPlants);
 
 /*** ESCRITURA  ***/
-/*Crea un nuevo archivo de nombre queryName o lo abre si ya existiese y lo reescribe.
- * Le agrega el encabezado header1:header2
-*/
+
+/*Inicializa una nueva query vacia con dos titulares y un nombre de archivo*/
+//STATIC O SIRVE PARA ALGO?
 FILE * newQuery (char header1[], char header2[], char queryName[]);
 
-/*Carga en el archivo query el nombre de todos los barrios seguido de su cantidad de habitantes de 
- * manera decreciente por habitantes por barrio
- */
-void q1 (FILE * query, civilADT civil);
 
-/*Guarda en el archivo query el  nombre de los barrios seguido del cociente entre los arboles por cantidad de habi
- * tantes de manera decreciente 
-*/
-void q2 (FILE * query, civilADT civil);
 
-/*Guarda en el archivo query el nombre de todos los arboles seguido del diametro promedio en orden
- * decreciente.
-*/
-void q3 (FILE * query, botanicalADT botanical);
+/*Retornan verdadero o falso dependiendo si fallan en el cargado de los datos o no respectivamente*/
+
+/*Ejecuta los cambios necesarios y produce el query 1*/
+bool q1 (FILE * query, civilADT civil);
+
+/*Ejecuta los cambios necesarios y produce el query 2*/
+bool q2 (FILE * query, civilADT civil);
+
+/*Ejecuta los cambios necesarios y produce el query 3*/
+bool q3 (FILE * query, botanicalADT botanical);
 
 #endif /*CSV.h*/

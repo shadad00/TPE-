@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
+#include "checkError.h"
 
 #ifndef civilADT_h
 #define civilADT_h
@@ -29,23 +31,23 @@ Libera los recursos usados por el TAD
 */
 void freeCivil(civilADT civil);
 
-/*Guarda la informacion de cada barrio con su
+/*
+Guarda la informacion de cada barrio con su
 cantidad de habitantes.No admite barrios repetidos,ignorandolos. 
-Devuelve true or false dependiendo de si pudo almacenar o no la informacion.
 */
 bool addNeigh(civilADT civil,char * barrio, unsigned long habitantes);
 
 /*
 Incrementa en uno la cantidad de arboles del 
-barrio
+barrio. Devuelve falso si el barrio no existia.  
 */
-void addTree(civilADT civil, char * barrio);
+bool addTree(civilADT civil, char * barrio);
 
 /*
 ** Funciones para poder iterar. 
 */
 
-/*Deuelve true si no hay mas barrios en la coleccion*/
+/*Deuelve 1 si no hay mas barrios en la coleccion*/
 bool noMoreNeighs (civilADT civil);
 /*Resetea el iterador al principio de la coleccion*/
 void resetNeigh (civilADT civil); 
@@ -54,12 +56,17 @@ void nextNeigh (civilADT civil);
 
 /*
 ** Funciones que extraen informacion del actual 
-** elemento de la coleccion
+** elemento de la coleccion. 
+** Devuelven NULL o -1 si el TAD estaba vacio
 */
 char * getNeighName (civilADT civil); 
-unsigned long getNeighPop (civilADT civil);
-unsigned long getNeighTrees (civilADT civil);
-double getTreesPerHab (civilADT civil);
+long getNeighPop (civilADT civil);
+long getNeighTrees (civilADT civil);
+//Devuelve truncado a dos decimales
+float getTreesPerHab (civilADT civil);
+
+/*Devuelve 1 si el TAD estaba vacio o no fue incializado*/
+bool isEmptyCivil (civilADT civil);
 
 /*
 ** Funciones SORT para ordenar
