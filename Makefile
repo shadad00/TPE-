@@ -1,29 +1,36 @@
 COMPILER=gcc 
 FLAGS= -Wall -pedantic -std=c99 -lm -fsanitize=address
 ROOTNAME=arbolesADT
-OUTPUT_BUE=$(ROOTNAME)BUE
-OUTPUT_VAN=$(ROOTNAME)VAN
 VAN_LABEL=VAN
 BUE_LABEL=BUE
-HFILES=manageCSV.h botanicalADT.h civilADT.h
-OFILES=main.o manageCSV.o botanicalADT.o civilADT.o
+OUTPUT_BUE=$(ROOTNAME)$(BUE_LABEL)
+OUTPUT_VAN=$(ROOTNAME)$(VAN_LABEL)
+OFILES=botanicalADT.o civilADT.o
 
-all: build clean
+all: buildVAN buildBUE clean
 
 clean: 
 	rm *.o
 
-build:  $(OFILES) 
-	$(COMPILER) $(FLAGS) -D $(VAN_LABEL) -o $(OUTPUT_VAN) $(OFILES)
-	$(COMPILER) $(FLAGS) -D $(BUE_LABEL) -o $(OUTPUT_BUE) $(OFILES)
+buildVAN: mainVAN.o manageCSVVAN.o botanicalADT.o civilADT.o
+	$(COMPILER) $(FLAGS) -D $(VAN_LABEL) -o $(OUTPUT_VAN) $(OFILES) mainVAN.o manageCSVVAN.o
+	
+buildBUE: mainBUE.o manageCSVBUE.o botanicalADT.o civilADT.o
+	$(COMPILER) $(FLAGS) -D $(B_LABEL) -o $(OUTPUT_BUE) $(OFILES)  mainBUE.o manageCSVBUE.o
 
 
-main.o: main.c
-	$(COMPILER) $(FLAGS) -c main.c
+mainBUE.o: main.c
+	$(COMPILER) $(FLAGS) -D $(BUE_LABEL) -c main.c
+
+mainVAN.o: main.c
+	$(COMPILER) $(FLAGS) -D $(VAN_LABEL) -c main.c
 
 
-manageCSV.o: manageCSV.c
-	$(COMPILER) $(FLAGS) -c manageCSV.c
+manageCSVBUE.o: manageCSV.c
+	$(COMPILER) $(FLAGS) -D $(BUE_LABEL) -c manageCSV.c
+
+manageCSVVAN.o: manageCSV.c
+	$(COMPILER) $(FLAGS) -D $(VAN_LABEL) -c manageCSV.c
 
 
 botanicalADT.o: botanicalADT.c
