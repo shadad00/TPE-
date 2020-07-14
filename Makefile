@@ -1,6 +1,6 @@
 COMPILER=gcc 
 FLAGS= -Wall -pedantic -std=c99 -lm -fsanitize=address
-ROOTNAME=procesarArboles
+ROOTNAME=arbolesADT
 OUTPUT_BUE=$(ROOTNAME)BUE
 OUTPUT_VAN=$(ROOTNAME)VAN
 VAN_LABEL=VAN

@@ -1,4 +1,4 @@
-# procesarArbolesADT
+# arbolesADT
 
 El proyecto permite procesar la informacion de los arboles censados en distintas ciudades.
 Su objetivo principal es la creacion de ciertas consultas especificas. 
@@ -17,7 +17,7 @@ Los archivos deben ser llamados en ese orden (primero el de arboles y despues el
 
 ```bash
 make build 
-./procesarArbolesBUE arbolesBUE.csv barriosBUE.csv
+./arbolesADTBUE arbolesBUE.csv barriosBUE.csv
 ```
 
 ## Sobre las consultas producidas
