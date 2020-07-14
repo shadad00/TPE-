@@ -14,7 +14,7 @@ all: build clean
 clean: 
 	rm *.o
 
-build:  $(OFILES) $(HFILES) 
+build:  $(OFILES) 
 	$(COMPILER) $(FLAGS) -D $(VAN_LABEL) -o $(OUTPUT_VAN) $(OFILES)
 	$(COMPILER) $(FLAGS) -D $(BUE_LABEL) -o $(OUTPUT_BUE) $(OFILES)
 
