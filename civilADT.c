@@ -1,6 +1,6 @@
 #include "civilADT.h"
 #include <stdbool.h>
-#include "checkError.h"
+#define OUTOFMEM errno==ENOMEM
 
 #define EPSILON 0.01
 
@@ -32,7 +32,7 @@ static float truncate(float numero){
 /*Inicializa un nuevo ADT*/
 civilADT newCivil(int * flag){
   civilADT aux=calloc(1,sizeof(struct civilCDT));
-  *flag=checkMem();
+  *flag= OUTOFMEM;
   return aux;
 }
 
@@ -58,13 +58,13 @@ Agrega un elemento en la lista segun el orden ASCII de los barrios
 Se inicializa la cantidad de arboles en cero.
 Recorre el vector para asegurarse que no haya repetidos.Si exitiesen repetidos en el archivo se consideraria un error y se ignoraria la segunda aparicion. 
 */
-bool addNeigh(civilADT civil, char * barrio, unsigned long habitantes){
+int addNeigh(civilADT civil, char * barrio, unsigned long habitantes){
 
 
   /*Buscar repetidos, si encuentra lo ignora*/
   for(int i = 0 ; i < civil->qNeighs ; i++)
-    if( ! checkRep(civil->neighs[i]->name, barrio) )
-      return true;
+    if( strcmp(civil->neighs[i]->name, barrio) == 0 )
+      return -1;
   
 
   /* Agrega al final , reservando una posicion mas */
@@ -72,8 +72,8 @@ bool addNeigh(civilADT civil, char * barrio, unsigned long habitantes){
   int Dim = civil->qNeighs;
   aux = realloc(civil->neighs,(Dim+1)*sizeof(struct elementos*));
 
-  if( !checkMem() )
-    return false; 
+  if( OUTOFMEM )
+    return 0; 
 
   civil->neighs=aux;
   
@@ -81,21 +81,21 @@ bool addNeigh(civilADT civil, char * barrio, unsigned long habitantes){
    
   civil->neighs[Dim]=malloc(sizeof(tNeigh)); 
   
-  if( ! checkMem() )
-    return false;
+  if( OUTOFMEM)
+    return 0;
 
   civil->neighs[Dim]->pop=habitantes;
   civil->neighs[Dim]->qTrees=0;
   int largo=strlen(barrio);
   char * aux1=malloc((largo+1)*sizeof(char));
 
-  if(! checkMem() )
-    return false; 
+  if( OUTOFMEM)
+    return 0; 
   
   civil->neighs[Dim]->name=aux1;
   strcpy(civil->neighs[Dim]->name,barrio);
   (civil->qNeighs)++;
-  return true;
+  return 1;
 }
 
 /*Calcula arboles por habitante*/
@@ -113,7 +113,7 @@ barrio.Intercambia con el elemento anterior.
 El objetivo de esto es mejorar el caso promedio. 
 Los elementos mas populares quedan mas adelante
 */
-bool addTree(civilADT civil, char * barrio){
+int addTree(civilADT civil, char * barrio){
   /*Recorre el vector hasta encontrar el elemento*/
   int c ;
   for(int i = 0 ; i < civil->qNeighs ; i++)
@@ -127,10 +127,11 @@ bool addTree(civilADT civil, char * barrio){
         civil->neighs[i]=civil->neighs[i-1];
         civil->neighs[i-1]=aux;
       }
-      return true; 
+      return 1; 
     }
-    //Devuelve 0 si el barrio no existia
-  return false; 
+    //Devuelve -1 si el barrio no existia e ignoro
+
+  return -1; 
 }
 
 

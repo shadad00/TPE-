@@ -20,7 +20,7 @@
 #include "civilADT.h"
 #include <stdbool.h>
 #include <math.h>
-#include "checkError.h"
+
 
 //Ya valide en el main que VAN o BUE este definido
 //Columnas donde se encuentra cada informacion necesaria
@@ -62,10 +62,12 @@ FILE * loadFile (char * filename);
 /*** LECTURA  ***/
 
 /**Carga iterativamente la informacion de todo el archivo en el civilTAD**/
-bool readNeighs (civilADT civil, FILE * fNeighs);
+/*Devuelve  0 si fallo, 1 si tuvo exito y -1 si hubo barrios repetidos*/
+int readNeighs (civilADT civil, FILE * fNeighs);
 
 /**Carga iterativamente la informacion de todo el archivo en el botanicTAD**/
-bool readPlants(botanicalADT botanical, civilADT civil,FILE * fPlants);
+/**Devuelve 0 si fallo, 1 si exito y -1 si habia un barrio inexistente en el csv de barrios en el csv de arboles**/
+int readPlants(botanicalADT botanical, civilADT civil,FILE * fPlants);
 
 /*** ESCRITURA  ***/
 

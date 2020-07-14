@@ -3,8 +3,10 @@
 /* Devuelve un puntero a filename. Aborta en caso de error */
 FILE * loadFile (char * filename) {
   FILE * pFile = fopen(filename, "r");
-  if (! checkFile(pFile, filename)) 
-    exit(3); //Es una funcion de front, puede hacer exit
+  if (pFile == NULL) {
+    fprintf(stderr, "No se pudo abrir el archivo %s.\n", filename);
+    exit(3); //Es una funcion de front, puede hacer exit e imprimir
+  }
   return pFile; 
 }
 
@@ -51,28 +53,30 @@ static void getRegBOT(char * line, char * neigh, size_t neighCol, char *scName, 
 }
 
 /* Carga iterativamente la informacion de todo el archivo en el botanicTAD */
-bool readPlants(botanicalADT botanical, civilADT civil, FILE * fPlants) {
-  bool flag = true;
+int readPlants(botanicalADT botanical, civilADT civil, FILE * fPlants) {
+  bool flag=1;
   //Variables dummy para hacer el paso del csv al tad
   float tempDiam;
   char tempNeigh[MAX_LENGTH];
   char tempArbol [MAX_LENGTH];
   char buf[MAX_LINE];
+  int ignored=1; 
   //La primera linea del archivo es basura 
   fgets(buf, MAX_LINE, fPlants);
   //Para cualquier otra linea, debo almacenar esa informacion
   while(flag && (fgets(buf, MAX_LINE, fPlants) != NULL)){
     getRegBOT(buf, tempNeigh, BOT_NEIGH, tempArbol, BOT_TREE, &tempDiam, BOT_DIAM);
-    if ( ! addTree(civil, tempNeigh) ) 
-      fprintf(stderr, "No se contabiliza un arbol para el barrio \"%s\" pues no esta en el csv de barrios.\n", tempNeigh);
+    if ( addTree(civil, tempNeigh) == -1 ) 
+      ignored=-1; 
     flag = addPlant(botanical, tempArbol, tempDiam);
   }
-  return flag;
+  return (flag?ignored:!flag);
 }
 
 /* Carga iterativamente la informacion de todo el archivo en el civilTAD */
-bool readNeighs (civilADT civil, FILE * fNeighs){
-  bool flag = true;
+int readNeighs (civilADT civil, FILE * fNeighs){
+  int flag = 1;
+  int reps = 1; 
   long tempPop; 
   char tempNombre[MAX_LENGTH];
   char buf[MAX_LINE];
@@ -82,8 +86,10 @@ bool readNeighs (civilADT civil, FILE * fNeighs){
     while( flag && (fgets(buf, MAX_LINE, fNeighs) != NULL) ){
       getRegCIV(buf, tempNombre, NEIGH_NAME, &tempPop, NEIGH_POP);
       flag = addNeigh(civil, tempNombre, tempPop);
+      if (flag == -1) 
+        reps = -1; 
     } 
-  return flag;
+  return reps;
 }
 
 /* Inicializa una nueva query vacia con dos titulares y un nombre de archivo */

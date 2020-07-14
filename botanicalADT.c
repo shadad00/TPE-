@@ -1,6 +1,5 @@
 #include "botanicalADT.h"
-#include "checkError.h"
-
+#define OUTOFMEM errno==ENOMEM
 #define EPSILON 0.001
 
 typedef struct tTree {
@@ -17,7 +16,7 @@ typedef struct botanicalCDT {
 
 botanicalADT newBotanical (int * flag) {
   botanicalADT aux = calloc(1, sizeof(botanicalCDT));
-  *flag=checkMem();
+  *flag = OUTOFMEM;
   return aux;
 }
 
@@ -57,19 +56,19 @@ bool addPlant(botanicalADT botanical, char * treeName, float diameter) {
   //Primero agrando al vector
   
   tTree ** aux=realloc(botanical->trees, sizeof(tTree *)*(i+1)); 
-  if (!checkMem())
+  if (OUTOFMEM)
     return false;
   botanical->trees = aux; 
   
 
   //El vector es ahora lo suficientemente largo
   botanical->trees[i]=malloc(sizeof(tTree));
-  if (!checkMem())
+  if (OUTOFMEM)
     return false;
   botanical->trees[i]->diameter=diameter; 
   botanical->trees[i]->quantity=1;
   botanical->trees[i]->name=malloc(sizeof(char)*(strlen(treeName)+1)); 
-  if (!checkMem())
+  if (OUTOFMEM)
     return false;
   strcpy(botanical->trees[i]->name,  treeName); 
   botanical->qSpecies++;

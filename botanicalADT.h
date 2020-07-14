@@ -16,7 +16,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <math.h>
-#include "checkError.h"
+
 
 #ifndef botanicalADT_h
 #define botanicalADT_h
@@ -24,7 +24,7 @@
 typedef struct botanicalCDT * botanicalADT;
 
 /*Inicializa un nuevo TAD */
-botanicalADT newBotanical(); 
+botanicalADT newBotanical(int * flag); 
 
 /*Libera los recursos utilizados por el TAD*/
 void freeBotanical(botanicalADT botanical);

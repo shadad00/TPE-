@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
-#include "checkError.h"
+#include <errno.h>
 
 #ifndef civilADT_h
 #define civilADT_h
@@ -35,13 +35,13 @@ void freeCivil(civilADT civil);
 Guarda la informacion de cada barrio con su
 cantidad de habitantes.No admite barrios repetidos,ignorandolos. 
 */
-bool addNeigh(civilADT civil,char * barrio, unsigned long habitantes);
+int addNeigh(civilADT civil,char * barrio, unsigned long habitantes);
 
 /*
 Incrementa en uno la cantidad de arboles del 
 barrio. Devuelve falso si el barrio no existia.  
 */
-bool addTree(civilADT civil, char * barrio);
+int addTree(civilADT civil, char * barrio);
 
 /*
 ** Funciones para poder iterar. 

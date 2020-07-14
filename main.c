@@ -3,39 +3,31 @@
 #include "civilADT.h"
 #include "manageCSV.h"
 #include <errno.h>
-#include "checkError.h"
 #include <stdlib.h>
 #include <math.h>
 
+#define MEMMSG fprintf(stderr, "No hay memoria suficiente\n");
+    
 /* Libera la memoria utilizada y cierra los archivos abiertos */
 void goodbye(FILE * f1, FILE * f2, botanicalADT botanical, civilADT civil);
 
 int main (int argc, char * argv[]){
 
   /*Chequea si al compilar se definio VAN o BUE*/
-  if (! checkMode() ) 
-    return 1;
-  
+  #if !defined BUE && !defined VAN
+     fprintf(stderr, "Modo no definido o codigo AAA no valido.\n");
+     return 1; 
+  #endif 
+
   /*Chequea cantidad de parametros*/
-	 if (! checkArgs(argc) ) 
-	   return 2;
-   
+	 if (argc != 3) {
+    fprintf(stderr, "Cantidad de parametros incorrecta.\n");
+    return 2; 
+   }
+  
 	/*Preparacion inicial de los ADTs y archivos*/
   int flag;
   botanicalADT datosPlantas = newBotanical(&flag);
-
-  if ( !flag ) {
-    freeBotanical(datosPlantas);
-    return 4;
-  }
-
-  civilADT datosBarrios = newCivil(&flag);
-  if ( !flag ) {
-    freeBotanical(datosPlantas);
-    freeCivil(datosBarrios);
-    return 4;
-  }
-  
   FILE * pBarrios = NULL, * pArboles = NULL;
 
   /* Abre los archivos a ejecutar */
@@ -43,16 +35,39 @@ int main (int argc, char * argv[]){
   pBarrios = loadFile(argv[2]);
 
 
-  /*Lectura de los archivos*/
-	if( ! readNeighs(datosBarrios, pBarrios)) {
-    goodbye(pArboles, pBarrios, datosPlantas, datosBarrios);
-    return 4; 
+  if ( flag ) {
+    MEMMSG
+    freeBotanical(datosPlantas);
+    fclose(pArboles);
+    fclose(pBarrios);
+    return 4;
   }
   
-  if( ! readPlants(datosPlantas, datosBarrios, pArboles)) {
+  civilADT datosBarrios = newCivil(&flag);
+  if ( flag ) {
+    MEMMSG
+    goodbye(pArboles, pBarrios, datosPlantas,datosBarrios);
+    return 4;
+  }
+  
+  /*Lectura de los archivos*/
+  int c; 
+  c = readNeighs(datosBarrios, pBarrios); 
+	if( c == 0 ) {
+    MEMMSG
     goodbye(pArboles, pBarrios, datosPlantas,datosBarrios);
     return 4; 
-  }
+  } else if (c == -1 ) 
+    fprintf(stderr, "Se detectaron e ignoraron registros repetidos en el csv de barrios.\n");
+  
+
+  c = readPlants(datosPlantas, datosBarrios, pArboles);
+  if( c == 0 ) {
+    MEMMSG
+    goodbye(pArboles, pBarrios, datosPlantas,datosBarrios);
+    return 4; 
+  } else if (c == -1)
+    fprintf(stderr, "No se contabilizaron arboles para ciertos barrios pues no estaban en el csv de barrios.\n");
 
 
   //Archivo para la Query1
