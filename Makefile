@@ -6,8 +6,7 @@ OUTPUT_VAN=$(ROOTNAME)VAN
 VAN_LABEL=VAN
 BUE_LABEL=BUE
 HFILES=manageCSV.h botanicalADT.h civilADT.h
-CFILES=main.c manageCSV.c botanicalADT.c civilADT.c
-OFILES=$(SOURCES:.c=.o)
+OFILES=main.o manageCSV.o botanicalADT.o civilADT.o
 
 all: build clean
 
@@ -29,3 +28,6 @@ manageCSV.o: manageCSV.c
 
 botanicalADT.o: botanicalADT.c
 	$(COMPILER) $(FLAGS) -c botanicalADT.c
+
+civilADT.o: civilADT.c
+	$(COMPILER) $(FLAGS) -c civilADT.c
