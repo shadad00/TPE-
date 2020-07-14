@@ -5,7 +5,7 @@ Su objetivo principal es la creacion de ciertas consultas especificas.
 
 ## Instalacion
 
-1) Invocar al comando `make build`. Esto generará dos ejecutables procesarArbolesBUE y procesarArbolesVAN.
+1) Invocar al comando `make` o `make  build`. Esto generará dos ejecutables procesarArbolesBUE y procesarArbolesVAN (la primera opcion elimina ademas los archivos objeto).
 2) Seleccione e invoque el ejecutable deseado, seguido de los archivos .csv a procesar en el siguiente orden: 
 	i)  Informacion sobre los arboles
 	ii) Informacion sobre los barrios
@@ -26,6 +26,8 @@ El programa crea tres consultas en formato csv en el mismo directorio de ejecuci
 	i) Total de arboles por barrios. Ordenado descendente por cantidad de arboles y luego alfabeticamente por nombre de barrio. 
 	ii) Total de arboles por habitante. Ordenado descendente por cantidad de arboles por habitante y luego alfabeticamente por nombre de barrio. 
 	iii) Diametro promedio por especie de arbol. Ordenado descendente por diametro y luego alfabeticamente por nombre de especie. 
+
+Los nombres de las consultas producidad con query1.csv, query2.csv y query3.csv. Si ya existian esos archivos, los sobreescribe.  
 
 ## Posibles errores
 
