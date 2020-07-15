@@ -5,7 +5,7 @@ Su objetivo principal es la creacion de ciertas consultas especificas.
 
 ## Instalacion
 
-1) Invocar al comando `make` o `make  build`. Esto generará dos ejecutables procesarArbolesBUE y procesarArbolesVAN (la primera opcion elimina ademas los archivos objeto).
+1) Invocar al comando `make` o `make  all`. Esto generará dos ejecutables arbolesADTBUE y arbolesADTVAN (la primera opcion elimina ademas los archivos objeto).
 2) Seleccione e invoque el ejecutable deseado, seguido de los archivos .csv a procesar en el siguiente orden: 
 	i)  Informacion sobre los arboles
 	ii) Informacion sobre los barrios
@@ -16,7 +16,7 @@ Ejemplo de uso para archivos nombrados arbolesBUE.csv y barriosBUE.csv.
 Los archivos deben ser llamados en ese orden (primero el de arboles y despues el de barrios) 
 
 ```bash
-make build 
+make all 
 ./arbolesADTBUE arbolesBUE.csv barriosBUE.csv
 ```
 
